@@ -1,0 +1,274 @@
+from pyglet.gl import *
+import sys
+import pyglet
+from pyglet.window import mouse
+import math
+from math import sqrt
+
+WIDTH = 1024
+cWIDTH = WIDTH/2
+HEIGHT = 768
+cHEIGHT = HEIGHT/2
+BUTTONw = 150
+BUTTONh = 70
+click_time = 0
+size = 1        # 10 Level
+score = 1       # 12 Level
+sizeStar = 95    # min 95    max 580
+scoreStar = 313   # min 313   max 907
+levelSize = 54
+
+# --------------------------------------------------------------------------
+# Game objects
+# --------------------------------------------------------------------------
+
+score_label = pyglet.text.Label('Score :',
+                        font_name='Times New Roman',
+                        font_size=15,
+                        x=20, y=HEIGHT-15,
+                        anchor_x='left', anchor_y='top')
+
+countscore_text = pyglet.text.Label('',
+                       font_name='Times New Roman',
+                       font_size=50, bold = True,
+                       x=WIDTH/2, y=HEIGHT/2,
+                       anchor_x='center',anchor_y='center')
+
+pauseButton_label = pyglet.text.Label('Pause',
+                        font_name='Times New Roman',
+                        font_size=25,
+                        x= WIDTH-BUTTONw+45, y=80+BUTTONh,
+                        anchor_x='center', anchor_y='center')
+
+resumeButton_label = pyglet.text.Label('Resume',
+                        font_name='Times New Roman',
+                        font_size=25,
+                        x= WIDTH-BUTTONw+45, y=80+BUTTONh,
+                        anchor_x='center', anchor_y='center')
+
+quitButton_label = pyglet.text.Label('Quit',
+                        font_name='Times New Roman',
+                        font_size=25,
+                        x= WIDTH-BUTTONw+45, y=65,
+                        anchor_x='center', anchor_y='center')
+
+a_text = pyglet.text.Label('',
+                       font_name='Times New Roman',
+                       font_size=50, bold = True,
+                       x=WIDTH/2, y=HEIGHT/2-40,
+                       anchor_x='center',anchor_y='center')
+
+class StarOfSize(object):
+    """docstring for StarOfSize"""
+    def __init__(self, img):
+        super(StarOfSize, self).__init__()
+        self.img = img
+
+    def draw(self):
+        on_draw()
+        
+class StarOfScore(object):
+    """docstring for StarOfScore"""
+    def __init__(self, img):
+        super(StarOfScore, self).__init__()
+        self.img = img
+        
+# --------------------------------------------------------------------------
+# Create window
+# --------------------------------------------------------------------------
+
+platform = pyglet.window.get_platform()
+display = platform.get_default_display()
+screens = display.get_screens()[0]
+# game_window = pyglet.window.Window(WIDTH, HEIGHT, caption="On the ball")
+game_window = pyglet.window.Window(
+    fullscreen=False, screen=screens, width=WIDTH, height=HEIGHT)
+
+# --------------------------------------------------------------------------
+# Setting in the bars
+# --------------------------------------------------------------------------
+
+# size 
+# def sizeAdj(d):
+#     global size
+#     global sizeStar
+#     move = d%levelSize
+#     # size up
+#     if d>0:     
+#         for a in range (move):
+#             if size<10:
+#                 size+=1
+#                 sizeStar+=levelSize
+#                 star_size.draw()
+#     # size down
+#     if d<0:
+#         for a in range (move):
+#             if size>1:
+#                 size-=1
+#                 sizeStar-=levelSize
+#                 star_size.draw()
+
+
+
+# score up
+
+# score down
+
+# @game_window.event
+# def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+#     if buttons & mouse.RIGHT:
+# # Size bar
+#         if 59<x<76 and 100<y<510:
+#             if sizeStar<y<(sizeStar+starSize.height):
+#                 # print 'dy'+str(dy)
+#                 print x, y, dx, dy
+#                 sizeAdj(dy)
+# Score bar
+        #if 317<x<926 and 716<y<736:
+            #sizeAdj(size,sizeStar,dx)
+
+# --------------------------------------------------------------------------
+# Check if click in circle
+# --------------------------------------------------------------------------
+
+def is_within(x,y, circle):
+    distance = sqrt(((x - WIDTH/2) ** 2) + 
+                    ((y - HEIGHT/2) ** 2))
+    return distance < circle.width/2
+
+# --------------------------------------------------------------------------
+# Count score when click
+# --------------------------------------------------------------------------
+
+@game_window.event
+def on_mouse_press(x, y, button, modifiers):
+    if button == pyglet.window.mouse.LEFT:
+        #if not(30<y<185 and 844<x<994):
+        #dartBoard.width=math.sqrt(x*x+y*y)
+        #if x > math.sqrt(y - r):
+        if (is_within(x,y,dartBoard)):
+                global click_time
+                click_time+=1
+# pause & quit button
+    if button == pyglet.window.mouse.RIGHT:
+        global size
+        global sizeStar
+        global scoreStar
+        
+        # pause
+        if 115<y<185 and 844<x<994:
+            print 'pause'
+        # quit
+        elif 30<y<100 and 844<x<994:
+            sys.exit()
+        # score -
+        elif 275<x<302 and 712<y<739: 
+            print 'score<'
+        # score +
+        elif 938<x<965 and 712<y<739: 
+            print 'score>'
+        # size -
+        elif 54<x<81 and 55<y<82: 
+            print 'size<'
+            if size>1:
+                size-=1
+                # star_size = pyglet.sprite.Sprite(starSize, 55, sizeStar-levelSize)
+                sizeStar=sizeStar-levelSize
+            else:
+                sizeStar=sizeStar
+                star_size=star_size
+        # size +
+        elif 54<x<81 and 618<y<645: 
+            print 'size>'
+            if size<10:
+                size+=1
+                # star_size = pyglet.sprite.Sprite(starSize, 55, sizeStar+levelSize)
+                sizeStar=sizeStar+levelSize
+            else:
+                sizeStar=sizeStar
+                star_size=star_size
+        # @game_window.event
+        # def on_draw():
+        #     game_window.clear()
+        #     # board
+        #     dart_Board.draw()
+        #     # BG
+        #     score_BG.draw()
+        #     quit_BG.draw();
+        #     pause_BG.draw();
+        #     # text
+        #     countscore_text.text = str(click_time)
+        #     countscore_text.draw()
+        #     score_label.draw()
+        #     pauseButton_label.draw()
+        #     quitButton_label.draw()
+        #     # adjust bar
+        #     score_bar.draw()
+        #     size_bar.draw()
+        #     star_size.draw()
+        #     star_score.draw()
+        #     a_text.text=str(sizeStar)
+        #     a_text.draw()
+
+#
+# Draw
+#
+
+@game_window.event
+def on_draw():
+    game_window.clear()
+    # board
+    dart_Board.draw()
+    # BG
+    score_BG.draw()
+    quit_BG.draw();
+    pause_BG.draw();
+    # text
+    countscore_text.text = str(click_time)
+    countscore_text.draw()
+    score_label.draw()
+    pauseButton_label.draw()
+    quitButton_label.draw()
+    # adjust bar
+    score_bar.draw()
+    size_bar.draw()
+    star_size.draw()
+    star_score.draw()
+    a_text.text=str(sizeStar)
+    a_text.draw()
+
+# --------------------------------------------------------------------------
+# Load resources
+# --------------------------------------------------------------------------
+
+pyglet.resource.path = ['../resources']
+pyglet.resource.reindex()
+
+dartBoard = pyglet.resource.image("DB574.png")
+dart_Board = pyglet.sprite.Sprite(dartBoard, (WIDTH/2)-(dartBoard.width/2), (HEIGHT/2)-(dartBoard.height/2))
+
+buttonBG = pyglet.resource.image("buttonBG.png")
+pause_BG = pyglet.sprite.Sprite(buttonBG, WIDTH-BUTTONw-30, 45+BUTTONh)
+quit_BG = pyglet.sprite.Sprite(buttonBG, WIDTH-BUTTONw-30, 30)
+BG = pyglet.resource.image("scoreBG.png")
+score_BG = pyglet.sprite.Sprite(BG, 10, HEIGHT-BUTTONh-10)
+
+scoreBar = pyglet.resource.image("scoreBar.png")
+score_bar = pyglet.sprite.Sprite(scoreBar, BUTTONw+120, HEIGHT-115)
+sizeBar = pyglet.resource.image("sizeBar.png")
+size_bar = pyglet.sprite.Sprite(sizeBar, 50, 50)
+starSize = pyglet.resource.image("star.png")
+star_size = pyglet.sprite.Sprite(starSize, 55, sizeStar)
+star_score = pyglet.sprite.Sprite(starSize, scoreStar, HEIGHT-55)
+
+# --------------------------------------------------------------------------
+# Game update
+# --------------------------------------------------------------------------
+
+# def update(dt):
+#     player.update(dt)
+    
+# pyglet.clock.schedule_interval(update, 1/60.)
+
+if __name__ == '__main__':
+    pyglet.app.run()
